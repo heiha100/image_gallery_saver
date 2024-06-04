@@ -23,7 +23,7 @@ public class SwiftImageGallerySaverPlugin: NSObject, FlutterPlugin {
  
 }
 
-class MediaSaver {
+class MediaSaver: Hashable {
     let errorMessage = "Failed to save, please check whether the permission is enabled"
     
     var result: FlutterResult?
@@ -196,6 +196,18 @@ class MediaSaver {
             || filename.hasSuffix(".GIF")
             || filename.hasSuffix(".heic")
             || filename.hasSuffix(".HEIC")
+    }
+
+    var identifier: String {
+        return UUID().uuidString
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        return hasher.combine(identifier)
+    }
+
+    public static func == (lhs: MediaSaver, rhs: MediaSaver) -> Bool {
+        return lhs.identifier == rhs.identifier
     }
 }
 
