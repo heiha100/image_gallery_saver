@@ -27,7 +27,7 @@ class MediaSaver {
     let errorMessage = "Failed to save, please check whether the permission is enabled"
     
     var result: FlutterResult?
-    var onFinished: (@escaping () -> Void)?
+    var onFinished: (() -> Void)?
 
     
     
