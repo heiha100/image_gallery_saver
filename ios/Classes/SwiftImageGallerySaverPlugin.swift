@@ -3,9 +3,7 @@ import UIKit
 import Photos
 
 public class SwiftImageGallerySaverPlugin: NSObject, FlutterPlugin {
-    let errorMessage = "Failed to save, please check whether the permission is enabled"
-    
-    var result: FlutterResult?;
+
 
     public static func register(with registrar: FlutterPluginRegistrar) {
       let channel = FlutterMethodChannel(name: "image_gallery_saver", binaryMessenger: registrar.messenger())
@@ -13,6 +11,21 @@ public class SwiftImageGallerySaverPlugin: NSObject, FlutterPlugin {
       registrar.addMethodCallDelegate(instance, channel: channel)
     }
 
+    public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+      let saver = MediaSaver()
+      saver.handle(call, result: result)
+    }
+    
+ 
+}
+
+class MediaSaver {
+    let errorMessage = "Failed to save, please check whether the permission is enabled"
+    
+    var result: FlutterResult?
+
+    
+    
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
       self.result = result
       if call.method == "saveImageToGallery" {
