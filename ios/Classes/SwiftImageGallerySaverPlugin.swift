@@ -3,6 +3,7 @@ import UIKit
 import Photos
 
 public class SwiftImageGallerySaverPlugin: NSObject, FlutterPlugin {
+    var savers = Set<MediaSaver>()
 
 
     public static func register(with registrar: FlutterPluginRegistrar) {
@@ -13,7 +14,10 @@ public class SwiftImageGallerySaverPlugin: NSObject, FlutterPlugin {
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
       let saver = MediaSaver()
-      saver.handle(call, result: result)
+        savers.insert(saver)
+        saver.handle(call, result: result, { [unowned self] in
+            savers.remove(saver)
+        })
     }
     
  
@@ -23,11 +27,13 @@ class MediaSaver {
     let errorMessage = "Failed to save, please check whether the permission is enabled"
     
     var result: FlutterResult?
+    var onFinished: (@escaping () -> Void)?
 
     
     
-    public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult, _ onFinished: @escaping () -> Void) {
       self.result = result
+      self.onFinished = onFinished
       if call.method == "saveImageToGallery" {
         let arguments = call.arguments as? [String: Any] ?? [String: Any]()
         guard let imageData = (arguments["imageBytes"] as? FlutterStandardTypedData)?.data,
@@ -176,6 +182,7 @@ class MediaSaver {
         saveResult.filePath = filePath
         saveResult.resourceId = resourceId
         result?(saveResult.toDic())
+        onFinished?()
     }
 
     func isImageFile(filename: String) -> Bool {
